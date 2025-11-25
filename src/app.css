@@ -1,0 +1,11 @@
+@import 'tailwindcss';
+
+@theme {
+  /* Reset default container sizes and set custom ones */
+  --container-*: initial;
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1280px;
+  --container-xl: 1280px;
+  --container-2xl: 1280px;
+}

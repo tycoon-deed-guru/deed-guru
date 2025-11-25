@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../app.css";
+
+@custom-variant dark (&:is([data-theme="dark"] *));
+
+:root {
+  --radius: 0.5rem;
+
+  /* Light Mode */
+  --background: oklch(0.99 0.005 240);
+  --foreground: oklch(0.15 0.02 240);
+  --card: oklch(0.98 0.005 240);
+  --card-foreground: oklch(0.15 0.02 240);
+  --popover: oklch(0.99 0.005 240);
+  --popover-foreground: oklch(0.15 0.02 240);
+  --primary: #c8ab37;
+  --primary-foreground: oklch(0.15 0.02 240);
+  --secondary: oklch(0.90 0.01 240);
+  --secondary-foreground: oklch(0.25 0.03 240);
+  --muted: oklch(0.96 0.005 240);
+  --muted-foreground: oklch(0.50 0.02 240);
+  --accent: oklch(0.80 0.06 70);
+  --accent-foreground: oklch(0.15 0.02 240);
+  --destructive: oklch(0.55 0.20 25);
+  --border: oklch(0.90 0.01 240);
+  --input: oklch(0.90 0.01 240);
+  --ring: oklch(0.72 0.08 70);
+
+  /* Semantic colors */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-primary: var(--primary);
+  --color-destructive: #ef4444;
+}
+
+[data-theme="dark"] {
+  --background: oklch(0.12 0.02 240);
+  --foreground: oklch(0.95 0.005 240);
+  --card: oklch(0.16 0.03 240);
+  --card-foreground: oklch(0.95 0.005 240);
+  --popover: oklch(0.16 0.03 240);
+  --popover-foreground: oklch(0.95 0.005 240);
+  --primary: #c8ab37;
+  --primary-foreground: oklch(0.12 0.02 240);
+  --secondary: oklch(0.25 0.04 240);
+  --secondary-foreground: oklch(0.90 0.01 240);
+  --muted: oklch(0.20 0.02 240);
+  --muted-foreground: oklch(0.65 0.02 240);
+  --accent: oklch(0.78 0.09 70);
+  --accent-foreground: oklch(0.12 0.02 240);
+  --destructive: oklch(0.60 0.22 25);
+  --border: oklch(0.25 0.02 240);
+  --input: oklch(0.25 0.02 240);
+  --ring: oklch(0.72 0.08 70);
+
+  /* Semantic colors - dark mode */
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-primary: var(--primary);
+  --color-destructive: #ef4444;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
