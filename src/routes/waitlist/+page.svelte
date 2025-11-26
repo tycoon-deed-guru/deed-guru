@@ -75,8 +75,10 @@
 
 					<div class="text-center text-sm text-muted-foreground">
 						<p>Already have access?</p>
-						<Button variant="link" href="/login" class="text-primary">
-							Sign In →
+						<Button variant="link" class="text-primary" asChild>
+							<a href="/login">
+								Sign In →
+							</a>
 						</Button>
 					</div>
 				</div>
