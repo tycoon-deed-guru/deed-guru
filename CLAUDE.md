@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-deed.guru is a real estate tokenization platform built on Hedera Guardian. It uses AI to analyze properties with a 10X scoring methodology, tokenizes assets via Hedera Token Service (HTS), and enables capital raising through dual-token ICO ($PROP + $DEAL).
+deed.guru is a real estate tokenization platform built on Hedera Guardian. It uses AI to analyze properties with an 8-Petal Bloom scoring methodology (40 sub-criteria across 8 categories), tokenizes assets via Hedera Token Service (HTS), and enables capital raising through dual-token ICO ($PROP + $DEAL).
 
 ## Tech Stack
 
@@ -64,7 +64,7 @@ bun run storybook        # Component stories at :6006
 
 | Path | Purpose |
 |------|---------|
-| `src/lib/components/RadarChart.svelte` | 10-axis property scoring visualization |
+| `src/lib/components/petal-chart/PetalChart.svelte` | 8-petal Bloom property scoring visualization |
 | `src/lib/components/app-sidebar.svelte` | Main navigation sidebar |
 | `src/lib/components/ui/` | shadcn-svelte component library |
 
@@ -76,16 +76,20 @@ bun run storybook        # Component stories at :6006
 
 ## Scoring System
 
-Properties are scored 0-100 across 10 axes (10X methodology):
-- Market, Rent Growth, CoC, IRR, Value-Add, Scale, DSCR, Location, Exit Cap, Resilience
-
-Grades: A+ (90+), A (85+), A- (80+), B+ (75+), B (70+), C (60+), F (<60)
+Properties are scored using the 8-Petal Bloom methodology:
+- 8 Petals: CASHFLOW, APPRECIATION, FINANCING, LOCATION, CONDITION, TENANCY, LIQUIDITY, COMPLIANCE
+- Each petal has 5 sub-criteria, scored 0-8 (40 total metrics)
+- Petal scores are weighted averages of sub-criteria
+- Total score: 0-64 (sum of 8 petal scores)
+- Grades: A+ (≥60), A (≥55), B+ (≥50), B (≥45), C (≥35), F (<35)
+- See [DESIGN.md](DESIGN.md) for complete scoring details
 
 ## Database Schema
 
 Main tables in `src/lib/server/db/schema.ts`:
+
 - **users** - Supabase Auth users with Stripe/Hedera IDs
-- **properties** - Properties with AI-extracted data and 10X scores
+- **properties** - Properties with AI-extracted data and 8-petal Bloom scores
 - **deals** - Pipeline stages (sourced → analyzing → underwriting → LOI → due diligence → closed)
 - **syndications** - Tokenized deals with HTS token details
 - **investments** - Token purchases with Hedera transaction tracking

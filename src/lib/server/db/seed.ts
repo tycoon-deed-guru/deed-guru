@@ -242,6 +242,7 @@ async function seedSubmarkets() {
 async function seedProperties() {
 	console.log('🌱 Seeding properties...');
 
+	// 8-Petal Bloom scoring (LOCATION, TENANCY, COMPLIANCE, FINANCING, CASHFLOW, APPRECIATION, LIQUIDITY, CONDITION)
 	const propertiesData = [
 		{
 			id: 'prop-austin-tech-towers',
@@ -249,14 +250,9 @@ async function seedProperties() {
 			name: 'Austin Tech Towers',
 			address: '123 Tech Blvd, Austin, TX 78701',
 			units: 342,
-			scores: [9, 8, 9, 9, 7, 10, 8, 9, 8, 8],
-			totalScore: 93,
+			scores: [7.5, 7.8, 7.2, 7.5, 8.0, 7.8, 7.0, 7.2], // Total: 60.0
+			totalScore: 60,
 			grade: 'A+',
-			year1CoC: '8.2',
-			projectedIRR: '18.5',
-			rentGrowthCAGR: '4.2',
-			dscr: '1.35',
-			submarketScore: 9,
 			documentType: 'om',
 		},
 		{
@@ -265,14 +261,9 @@ async function seedProperties() {
 			name: 'Phoenix Garden Apartments',
 			address: '456 Desert Rd, Phoenix, AZ 85001',
 			units: 218,
-			scores: [8, 7, 8, 8, 7, 8, 8, 8, 7, 8],
-			totalScore: 87,
+			scores: [7.0, 7.2, 6.8, 7.0, 7.5, 7.2, 6.8, 7.0], // Total: 56.5
+			totalScore: 56,
 			grade: 'A',
-			year1CoC: '7.8',
-			projectedIRR: '16.2',
-			rentGrowthCAGR: '3.8',
-			dscr: '1.28',
-			submarketScore: 8,
 			documentType: 'om',
 		},
 		{
@@ -281,14 +272,9 @@ async function seedProperties() {
 			name: 'Orlando Lakeside Villas',
 			address: '789 Lake View Dr, Orlando, FL 32801',
 			units: 156,
-			scores: [8, 8, 7, 8, 8, 7, 8, 9, 8, 7],
-			totalScore: 82,
-			grade: 'A-',
-			year1CoC: '7.2',
-			projectedIRR: '15.8',
-			rentGrowthCAGR: '5.1',
-			dscr: '1.22',
-			submarketScore: 8,
+			scores: [6.5, 7.0, 6.5, 6.8, 7.0, 7.5, 6.5, 6.8], // Total: 54.6
+			totalScore: 55,
+			grade: 'A',
 			documentType: 'om',
 		},
 		{
@@ -297,14 +283,9 @@ async function seedProperties() {
 			name: 'Nashville Heights',
 			address: '321 Music Row, Nashville, TN 37201',
 			units: 284,
-			scores: [8, 8, 8, 9, 8, 9, 8, 8, 8, 8],
-			totalScore: 89,
+			scores: [7.2, 7.5, 7.0, 7.2, 7.8, 7.5, 7.0, 7.2], // Total: 58.4
+			totalScore: 58,
 			grade: 'A',
-			year1CoC: '7.9',
-			projectedIRR: '17.1',
-			rentGrowthCAGR: '4.5',
-			dscr: '1.31',
-			submarketScore: 8,
 			documentType: 'manual',
 		},
 		{
@@ -313,14 +294,9 @@ async function seedProperties() {
 			name: 'Denver Mountain View',
 			address: '555 Peak Ct, Denver, CO 80202',
 			units: 198,
-			scores: [7, 7, 7, 8, 8, 8, 8, 8, 7, 7],
-			totalScore: 78,
+			scores: [6.8, 6.5, 6.5, 6.8, 6.8, 6.5, 6.5, 6.8], // Total: 53.2
+			totalScore: 53,
 			grade: 'B+',
-			year1CoC: '6.5',
-			projectedIRR: '14.2',
-			rentGrowthCAGR: '2.8',
-			dscr: '1.18',
-			submarketScore: 7,
 			documentType: 'om',
 		},
 		{
@@ -329,14 +305,9 @@ async function seedProperties() {
 			name: 'Dallas Skyline Plaza',
 			address: '777 Commerce St, Dallas, TX 75201',
 			units: 412,
-			scores: [7, 7, 8, 8, 7, 10, 7, 8, 7, 7],
-			totalScore: 81,
-			grade: 'A-',
-			year1CoC: '7.1',
-			projectedIRR: '15.5',
-			rentGrowthCAGR: '3.2',
-			dscr: '1.25',
-			submarketScore: 8,
+			scores: [6.8, 7.0, 6.5, 7.0, 7.2, 7.5, 6.5, 6.8], // Total: 55.3
+			totalScore: 55,
+			grade: 'A',
 			documentType: 'om',
 		},
 		{
@@ -345,14 +316,9 @@ async function seedProperties() {
 			name: 'Tampa Bay Residences',
 			address: '888 Bayshore Blvd, Tampa, FL 33606',
 			units: 245,
-			scores: [8, 8, 7, 8, 9, 8, 7, 9, 8, 8],
-			totalScore: 84,
-			grade: 'A-',
-			year1CoC: '7.4',
-			projectedIRR: '16.0',
-			rentGrowthCAGR: '4.8',
-			dscr: '1.24',
-			submarketScore: 9,
+			scores: [7.2, 7.5, 7.0, 7.2, 7.5, 7.5, 6.8, 7.2], // Total: 57.9
+			totalScore: 58,
+			grade: 'A',
 			documentType: 'rent_roll',
 		},
 		{
@@ -361,14 +327,9 @@ async function seedProperties() {
 			name: 'Atlanta Midtown Lofts',
 			address: '999 Peachtree St, Atlanta, GA 30309',
 			units: 178,
-			scores: [7, 7, 7, 7, 8, 7, 8, 8, 7, 7],
-			totalScore: 75,
+			scores: [6.5, 6.8, 6.5, 6.5, 6.5, 6.8, 6.2, 6.5], // Total: 52.3
+			totalScore: 52,
 			grade: 'B+',
-			year1CoC: '6.2',
-			projectedIRR: '13.8',
-			rentGrowthCAGR: '3.5',
-			dscr: '1.15',
-			submarketScore: 7,
 			documentType: 'om',
 		},
 	];

@@ -15,6 +15,13 @@
       "when": 1764072846344,
       "tag": "0001_workspace_integration",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1764143503383,
+      "tag": "0002_dazzling_texas_twister",
+      "breakpoints": true
     }
   ]
 }
