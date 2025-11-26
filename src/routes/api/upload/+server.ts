@@ -4,7 +4,7 @@ import { requireAuth } from '$lib/server/auth/supabase';
 import { extractPropertyData, extractTextFromFile } from '$lib/server/ai/extractor';
 import { db } from '$lib/server/db';
 import { properties, users } from '$lib/server/db/schema';
-import { calculatedeed.guruScore, totalScore, letterGrade } from '$lib/types';
+import { calculateScoreFromRaw, totalScore, letterGrade } from '$lib/types';
 import { eq } from 'drizzle-orm';
 
 export const POST: RequestHandler = async (event) => {
@@ -36,7 +36,7 @@ export const POST: RequestHandler = async (event) => {
 		const extracted = await extractPropertyData(documentText);
 
 		// Calculate deed.guru scores
-		const scores = calculatedeed.guruScore({
+		const scores = calculateScoreFromRaw({
 			...extracted,
 			id: '',
 			uploadedAt: new Date(),

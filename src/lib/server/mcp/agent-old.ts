@@ -8,7 +8,7 @@ import {
 	mlsSearchTool,
 	type MLSDeal,
 } from './mls-tools';
-import { calculatedeed.guruScore, totalScore, letterGrade, type Property } from '$lib/types';
+import { calculateScoreFromRaw, totalScore, letterGrade, type Property } from '$lib/types';
 
 /**
  * deed.guru Hunter Agent
