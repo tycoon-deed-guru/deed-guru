@@ -30,22 +30,26 @@
 			});
 
 			if (!res.ok) {
-				// Try to parse JSON error response
-				try {
-					const contentType = res.headers.get('content-type');
-					if (contentType?.includes('application/json')) {
+				// Check content type before parsing
+				const contentType = res.headers.get('content-type');
+
+				if (contentType?.includes('application/json')) {
+					// Try to parse JSON error
+					try {
 						const data = await res.json();
 						throw new Error(data.message || 'Login failed');
+					} catch {
+						// JSON parsing failed, use status-based message
 					}
-				} catch (jsonError) {
-					// If JSON parsing fails, show a generic error
-					if (res.status === 401) {
-						throw new Error('Invalid email or password');
-					} else if (res.status === 403) {
-						throw new Error('Access denied. Please check your email for verification.');
-					} else {
-						throw new Error('Unable to sign in. Please try again.');
-					}
+				}
+
+				// Use status-based error messages
+				if (res.status === 401) {
+					throw new Error('Invalid email or password');
+				} else if (res.status === 403) {
+					throw new Error('Access denied. Please check your email for verification.');
+				} else {
+					throw new Error('Unable to sign in. Please try again.');
 				}
 			}
 
