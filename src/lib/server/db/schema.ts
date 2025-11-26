@@ -1,6 +1,15 @@
 import { pgTable, text, timestamp, jsonb, integer, boolean, numeric, real } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
+// Alpha Access Whitelist - controls who can sign up during alpha testing
+export const alphaWhitelist = pgTable('alpha_whitelist', {
+	id: text('id').primaryKey(),
+	email: text('email').unique().notNull(),
+	invitedBy: text('invited_by'), // Email of person who invited them
+	notes: text('notes'), // Optional notes about this tester
+	createdAt: timestamp('created_at').defaultNow(),
+});
+
 // Users table - integrates with Supabase Auth
 export const users = pgTable('users', {
 	id: text('id').primaryKey(), // Supabase Auth UUID
