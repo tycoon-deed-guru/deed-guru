@@ -1,8 +1,8 @@
 <script lang="ts">
+	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Lock, Mail, FileText, Shield } from 'lucide-svelte';
+	import { FileText, Lock, Mail } from 'lucide-svelte';
 </script>
 
 <svelte:head>
@@ -23,8 +23,8 @@
 		<!-- Main Card -->
 		<Card class="border-2">
 			<CardHeader class="text-center space-y-4">
-				<div class="mx-auto size-20 rounded-full bg-primary/10 flex items-center justify-center">
-					<Shield class="size-10 text-primary" />
+				<div class="mx-auto size-20 flex items-center justify-center">
+					<img src="/deed.guru logo.png" alt="deed.guru" class="h-20 w-auto object-contain" />
 				</div>
 				<CardTitle class="text-3xl md:text-4xl">
 					deed.guru is in Private Alpha
