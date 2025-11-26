@@ -30,8 +30,23 @@
 			});
 
 			if (!res.ok) {
-				const data = await res.json();
-				throw new Error(data.message || 'Login failed');
+				// Try to parse JSON error response
+				try {
+					const contentType = res.headers.get('content-type');
+					if (contentType?.includes('application/json')) {
+						const data = await res.json();
+						throw new Error(data.message || 'Login failed');
+					}
+				} catch (jsonError) {
+					// If JSON parsing fails, show a generic error
+					if (res.status === 401) {
+						throw new Error('Invalid email or password');
+					} else if (res.status === 403) {
+						throw new Error('Access denied. Please check your email for verification.');
+					} else {
+						throw new Error('Unable to sign in. Please try again.');
+					}
+				}
 			}
 
 			// Redirect to dashboard
