@@ -1,6 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
+import { building } from '$app/environment';
 
 // Support both SvelteKit and standalone execution
 let DATABASE_URL: string;
@@ -11,8 +12,14 @@ try {
 	DATABASE_URL = process.env.DATABASE_URL || '';
 }
 
-if (!DATABASE_URL) throw new Error('DATABASE_URL is not set');
+// Don't connect to database during build time
+if (!building) {
+	if (!DATABASE_URL) throw new Error('DATABASE_URL is not set');
+}
 
-const client = postgres(DATABASE_URL);
+// Use a dummy URL during build to prevent postgres client errors
+const client = postgres(building ? 'postgres://localhost/dummy' : DATABASE_URL, {
+	max: building ? 0 : 10, // No connections during build
+});
 
 export const db = drizzle(client, { schema });

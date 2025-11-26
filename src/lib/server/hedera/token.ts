@@ -8,7 +8,7 @@
 import {
 	TokenCreateTransaction,
 	TokenMintTransaction,
-	TokenTransferTransaction,
+	TransferTransaction,
 	TokenSupplyType,
 	TokenType,
 	PrivateKey,
@@ -121,7 +121,7 @@ export async function transferTokensToInvestor(
 	const client = initClient();
 	const treasuryAccountId = getOperatorAccountId();
 
-	const tx = await new TokenTransferTransaction()
+	const tx = await new TransferTransaction()
 		.addTokenTransfer(tokenId, treasuryAccountId, -amount) // Deduct from treasury
 		.addTokenTransfer(tokenId, investorAccountId, amount) // Credit investor
 		.freezeWith(client);

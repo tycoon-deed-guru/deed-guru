@@ -23,31 +23,13 @@ export const properties = pgTable('properties', {
 	address: text('address'),
 	units: integer('units'),
 
-	// Raw extracted data from AI
+	// Raw extracted data from AI (all 40 sub-criteria)
 	rawData: jsonb('raw_data'), // Full JSON from AI extraction
 
-	// deed.guru Scoring (legacy 10-axis system)
-	scores: jsonb('scores').notNull(), // Array of [0-10, 0-10, ...] for each axis
-	totalScore: integer('total_score').notNull(),
-	grade: text('grade').notNull(), // A+, A, A-, B+, etc.
-
-	// Petal Chart Scoring (new 8-petal system)
-	petalScores: jsonb('petal_scores'), // Record<PetalCategory, number> (0-8 each)
-	bloomScore: integer('bloom_score'), // 0-64 total
-	bloomStatus: text('bloom_status'), // 'fully-bloomed' | 'near-bloom' | 'blooming' | 'late-bloom' | 'budding'
-	petalConfidence: real('petal_confidence').default(0.85), // 0-1 average confidence
-	petalCompleteness: real('petal_completeness').default(0.8), // 0-1 data completeness
-
-	// Individual metrics (for easy querying)
-	year1CoC: text('year1_coc'), // Store as text to preserve decimals
-	projectedIRR: text('projected_irr'),
-	rentGrowthCAGR: text('rent_growth_cagr'),
-	popJobGrowth: text('pop_job_growth'),
-	valueAddPotential: text('value_add_potential'),
-	dscr: text('dscr'),
-	submarketScore: integer('submarket_score'),
-	exitCapCompressionBps: integer('exit_cap_compression_bps'),
-	economicResilience: integer('economic_resilience'),
+	// 8-Petal Bloom Scoring System
+	scores: jsonb('scores').notNull(), // Array of 8 petal scores [0-8, 0-8, ...] in PETAL_ORDER
+	totalScore: integer('total_score').notNull(), // Sum of all petal scores (0-64)
+	grade: text('grade').notNull(), // Letter grade: A+, A, B+, B, C, F
 
 	// Metadata
 	documentType: text('document_type'), // 'om' | 'rent_roll' | 'manual'

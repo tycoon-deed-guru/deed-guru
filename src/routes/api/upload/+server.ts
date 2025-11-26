@@ -4,7 +4,7 @@ import { requireAuth } from '$lib/server/auth/supabase';
 import { extractPropertyData, extractTextFromFile } from '$lib/server/ai/extractor';
 import { db } from '$lib/server/db';
 import { properties, users } from '$lib/server/db/schema';
-import { calculateScoreFromRaw, totalScore, letterGrade } from '$lib/types';
+import { calculateBloomScore, totalScore, letterGrade } from '$lib/types';
 import { eq } from 'drizzle-orm';
 
 export const POST: RequestHandler = async (event) => {
@@ -35,37 +35,29 @@ export const POST: RequestHandler = async (event) => {
 		// Use Vercel AI SDK to extract property data
 		const extracted = await extractPropertyData(documentText);
 
-		// Calculate deed.guru scores
-		const scores = calculateScoreFromRaw({
+		// Calculate 8-petal Bloom scores using all 40 sub-criteria
+		const propertyId = crypto.randomUUID();
+		const scores = calculateBloomScore({
 			...extracted,
-			id: '',
+			id: propertyId,
 			uploadedAt: new Date(),
 		});
 		const total = totalScore(scores);
 		const grade = letterGrade(total).grade;
 
-		// Save to database
+		// Save to database with Bloom scoring data
 		const [newProperty] = await db
 			.insert(properties)
 			.values({
-				id: crypto.randomUUID(),
+				id: propertyId,
 				userId: user.id,
 				name: extracted.name,
 				address: extracted.address,
 				units: extracted.units,
-				rawData: extracted,
-				scores,
-				totalScore: total,
-				grade,
-				year1CoC: extracted.year1CoC.toString(),
-				projectedIRR: extracted.projectedIRR.toString(),
-				rentGrowthCAGR: extracted.rentGrowthCAGR.toString(),
-				popJobGrowth: extracted.popJobGrowth.toString(),
-				valueAddPotential: extracted.valueAddPotential.toString(),
-				dscr: extracted.dscr.toString(),
-				submarketScore: extracted.submarketScore,
-				exitCapCompressionBps: extracted.exitCapCompressionBps,
-				economicResilience: extracted.economicResilience,
+				rawData: extracted, // Store all 40 sub-criteria as JSON
+				scores, // Array of 8 petal scores (0-8 each)
+				totalScore: total, // Sum of all petal scores (0-64)
+				grade, // Letter grade (A+, A, B+, B, C, F)
 				documentType: 'om',
 			})
 			.returning();
