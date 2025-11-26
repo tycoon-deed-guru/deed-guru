@@ -1,9 +1,9 @@
-import { json, error } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
+import { eq } from 'drizzle-orm';
 import { createSupabaseServerClient } from '$lib/server/auth/supabase';
 import { db } from '$lib/server/db';
 import { alphaWhitelist, users } from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
 
 export const POST: RequestHandler = async ({ request, cookies, locals }) => {
 	try {
@@ -30,7 +30,7 @@ export const POST: RequestHandler = async ({ request, cookies, locals }) => {
 		}
 
 		// Create Supabase auth user
-		const supabase = createSupabaseServerClient({ cookies, locals } as any);
+		const supabase = createSupabaseServerClient({ cookies, locals });
 
 		const { data: authData, error: authError } = await supabase.auth.signUp({
 			email,
@@ -54,7 +54,6 @@ export const POST: RequestHandler = async ({ request, cookies, locals }) => {
 		await db.insert(users).values({
 			id: authData.user.id,
 			email: email.toLowerCase(),
-			fullName,
 		});
 
 		return json({ success: true, user: authData.user });
