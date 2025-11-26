@@ -29,34 +29,49 @@
 				body: JSON.stringify({ email, password }),
 			});
 
-			if (!res.ok) {
-				// Check content type before parsing
-				const contentType = res.headers.get('content-type');
+			// Try to parse response as JSON
+			let data: { message?: string } = {};
+			try {
+				const text = await res.text();
+				data = text ? JSON.parse(text) : {};
+			} catch (parseError) {
+				// Response is not JSON - use status-based error
+				console.error('Failed to parse response:', parseError);
 
-				if (contentType?.includes('application/json')) {
-					// Try to parse JSON error
-					try {
-						const data = await res.json();
-						throw new Error(data.message || 'Login failed');
-					} catch {
-						// JSON parsing failed, use status-based message
+				if (!res.ok) {
+					if (res.status === 401) {
+						throw new Error('Invalid email or password');
+					} else if (res.status === 403) {
+						throw new Error('Access denied');
+					} else if (res.status === 404) {
+						throw new Error('Service unavailable. Please try again later.');
+					} else {
+						throw new Error('Unable to sign in. Please try again.');
 					}
 				}
 
-				// Use status-based error messages
-				if (res.status === 401) {
-					throw new Error('Invalid email or password');
-				} else if (res.status === 403) {
-					throw new Error('Access denied. Please check your email for verification.');
-				} else {
-					throw new Error('Unable to sign in. Please try again.');
-				}
+				throw new Error('Unexpected response from server');
 			}
 
-			// Redirect to dashboard
+			// Check if request failed
+			if (!res.ok) {
+				throw new Error(data.message || 'Invalid email or password');
+			}
+
+			// Success - redirect to dashboard
 			window.location.href = '/dashboard';
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'An error occurred';
+			// Ensure we never show technical errors to users
+			if (err instanceof Error) {
+				// Only show user-friendly errors
+				if (err.message.includes('JSON') || err.message.includes('token') || err.message.includes('Unexpected')) {
+					error = 'Unable to sign in. Please try again.';
+				} else {
+					error = err.message;
+				}
+			} else {
+				error = 'An error occurred. Please try again.';
+			}
 		} finally {
 			loading = false;
 		}
