@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
 	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
@@ -9,14 +8,6 @@
 	let password = $state('');
 	let loading = $state(false);
 	let error = $state<string | null>(null);
-
-	// Development bypass - automatically redirect to dashboard
-	onMount(() => {
-		if (import.meta.env.DEV) {
-			console.log('🚀 Development mode: Bypassing login, redirecting to dashboard...');
-			window.location.href = '/dashboard';
-		}
-	});
 
 	async function handleLogin() {
 		loading = true;

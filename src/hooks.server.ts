@@ -15,15 +15,15 @@ const PUBLIC_ROUTES = [
 ];
 
 export const handle: Handle = async ({ event, resolve }) => {
-	// Create Supabase client and get session
+	// Create Supabase client and get user (more secure than getSession)
 	const supabase = createSupabaseServerClient(event);
 	const {
-		data: { session },
-	} = await supabase.auth.getSession();
+		data: { user },
+	} = await supabase.auth.getUser();
 
 	// Make user available to all routes via event.locals
 	event.locals.supabase = supabase;
-	event.locals.session = session;
+	event.locals.session = user ? { user } : null;
 
 	const pathname = event.url.pathname;
 
@@ -32,7 +32,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	if (!isPublicRoute) {
 		// Require authentication for all protected routes
-		if (!session?.user?.email) {
+		if (!user?.email) {
 			// Not authenticated - redirect to waitlist
 			throw redirect(303, '/waitlist');
 		}
@@ -41,7 +41,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		const whitelisted = await db
 			.select()
 			.from(alphaWhitelist)
-			.where(eq(alphaWhitelist.email, session.user.email))
+			.where(eq(alphaWhitelist.email, user.email))
 			.limit(1);
 
 		if (whitelisted.length === 0) {

@@ -5,9 +5,9 @@ import { createSupabaseServerClient } from '$lib/server/auth/supabase';
 import { db } from '$lib/server/db';
 import { alphaWhitelist, users } from '$lib/server/db/schema';
 
-export const POST: RequestHandler = async ({ request, cookies, locals }) => {
+export const POST: RequestHandler = async (event) => {
 	try {
-		const { email, password, fullName } = await request.json();
+		const { email, password, fullName } = await event.request.json();
 
 		// Validate input
 		if (!email || !password || !fullName) {
@@ -30,7 +30,7 @@ export const POST: RequestHandler = async ({ request, cookies, locals }) => {
 		}
 
 		// Create Supabase auth user
-		const supabase = createSupabaseServerClient({ cookies, locals });
+		const supabase = createSupabaseServerClient(event);
 
 		const { data: authData, error: authError } = await supabase.auth.signUp({
 			email,
@@ -50,11 +50,14 @@ export const POST: RequestHandler = async ({ request, cookies, locals }) => {
 			throw error(500, 'Failed to create user');
 		}
 
-		// Create user record in our database
-		await db.insert(users).values({
-			id: authData.user.id,
-			email: email.toLowerCase(),
-		});
+		// Create user record in our database (ignore if already exists)
+		await db
+			.insert(users)
+			.values({
+				id: authData.user.id,
+				email: email.toLowerCase(),
+			})
+			.onConflictDoNothing();
 
 		return json({ success: true, user: authData.user });
 	} catch (err) {

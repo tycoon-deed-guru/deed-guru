@@ -2,9 +2,9 @@ import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createSupabaseServerClient } from '$lib/server/auth/supabase';
 
-export const POST: RequestHandler = async ({ request, cookies, locals }) => {
+export const POST: RequestHandler = async (event) => {
 	try {
-		const { email, password } = await request.json();
+		const { email, password } = await event.request.json();
 
 		// Validate input
 		if (!email || !password) {
@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request, cookies, locals }) => {
 		}
 
 		// Create Supabase auth client
-		const supabase = createSupabaseServerClient({ cookies, locals });
+		const supabase = createSupabaseServerClient(event);
 
 		const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
 			email,

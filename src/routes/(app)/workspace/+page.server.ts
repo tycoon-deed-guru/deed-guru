@@ -12,7 +12,7 @@ import {
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	// Get authenticated user
-	const session = await locals.getSession();
+	const session = locals.session;
 	if (!session?.user) {
 		throw redirect(303, '/login');
 	}
@@ -71,7 +71,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 			id: doc.id,
 			name: doc.filename,
 			size: formatFileSize(doc.fileSize),
-			date: formatDate(doc.uploadedAt),
+			date: doc.uploadedAt ? formatDate(doc.uploadedAt) : 'Unknown',
 			status: doc.status,
 		})),
 		dataSources: dataSources.map((ds) => ({

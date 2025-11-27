@@ -29,15 +29,51 @@
 				body: JSON.stringify({ email, password, fullName }),
 			});
 
-			if (!res.ok) {
-				const data = await res.json();
-				throw new Error(data.message || 'Signup failed');
+			// Try to parse response as JSON
+			let data: { message?: string } = {};
+			try {
+				const text = await res.text();
+				data = text ? JSON.parse(text) : {};
+			} catch (parseError) {
+				// Response is not JSON - use status-based error
+				console.error('Failed to parse response:', parseError);
+
+				if (!res.ok) {
+					if (res.status === 400) {
+						throw new Error('Please check your information and try again');
+					} else if (res.status === 403) {
+						throw new Error('This email is not whitelisted for alpha access. Please request an invitation at alpha@deed.guru');
+					} else if (res.status === 409) {
+						throw new Error('An account with this email already exists');
+					} else if (res.status === 404) {
+						throw new Error('Service unavailable. Please try again later.');
+					} else {
+						throw new Error('Unable to create account. Please try again.');
+					}
+				}
+
+				throw new Error('Unexpected response from server');
 			}
 
-			// Redirect to dashboard
+			// Check if request failed
+			if (!res.ok) {
+				throw new Error(data.message || 'Unable to create account. Please try again.');
+			}
+
+			// Success - redirect to dashboard
 			window.location.href = '/dashboard';
 		} catch (err) {
-			error = err instanceof Error ? err.message : 'An error occurred';
+			// Ensure we never show technical errors to users
+			if (err instanceof Error) {
+				// Only show user-friendly errors
+				if (err.message.includes('JSON') || err.message.includes('token') || err.message.includes('Unexpected')) {
+					error = 'Unable to create account. Please try again.';
+				} else {
+					error = err.message;
+				}
+			} else {
+				error = 'An error occurred. Please try again.';
+			}
 		} finally {
 			loading = false;
 		}
