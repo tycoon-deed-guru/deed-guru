@@ -14,6 +14,7 @@
 		showCenterValue?: boolean;
 		interactive?: boolean;
 		enableGlow?: boolean;
+		showPotentialTrace?: boolean; // Show outline of perfect petal (score = 8)
 		comparisonData?: PetalDataPoint[];
 		onPetalClick?: (petal: PetalDataPoint) => void;
 		onPetalHover?: (petal: PetalDataPoint | null) => void;
@@ -31,12 +32,17 @@
 		showCenterValue = true,
 		interactive = true,
 		enableGlow = true,
+		showPotentialTrace = true,
 		comparisonData,
 		onPetalClick,
 		onPetalHover
 	}: PetalChartProps = $props();
 
+	// Add vertical padding for top/bottom label breathing room
+	const verticalPadding = $derived(size * 0.15); // 15% padding top and bottom
+	const viewBoxHeight = $derived(size + verticalPadding * 2);
 	const center = $derived(size / 2);
+	const centerY = $derived(center + verticalPadding);
 	const angleStep = $derived((2 * Math.PI) / data.length);
 
 	// Calculate total bloom score (0-64 scale for 8 petals with 0-8 each)
@@ -107,6 +113,19 @@
 		return score >= 8;
 	}
 
+	// Generate path for a perfect petal (score = 8) - used for potential trace
+	function getPerfectPetalPath(index: number): string {
+		const perfectPetal: PetalDataPoint = {
+			id: `perfect-${index}`,
+			label: '',
+			score: 8,
+			confidence: 1,
+			completeness: 1,
+			trend: 'stable'
+		};
+		return getPetalPath(index, perfectPetal);
+	}
+
 	function getPetalPath(index: number, dataPoint: PetalDataPoint): string {
 		const angle = index * angleStep - Math.PI / 2;
 		// Score is 0-8 scale per DESIGN.md, petal length proportional to score
@@ -129,7 +148,7 @@
 
 		// Inner base points (where petal starts - with slight width for overlap)
 		const baseX = center + Math.cos(angle) * innerRadius;
-		const baseY = center + Math.sin(angle) * innerRadius;
+		const baseY = centerY + Math.sin(angle) * innerRadius;
 		const baseLeftX = baseX + Math.cos(perpAngle) * baseHalfWidth;
 		const baseLeftY = baseY + Math.sin(perpAngle) * baseHalfWidth;
 		const baseRightX = baseX - Math.cos(perpAngle) * baseHalfWidth;
@@ -138,13 +157,13 @@
 		// Widest point at 60% from base - closer to tip for rounder end
 		const wideRadius = innerRadius + petalLength * 0.6;
 		const wideLeftX = center + Math.cos(angle) * wideRadius + Math.cos(perpAngle) * halfWidth;
-		const wideLeftY = center + Math.sin(angle) * wideRadius + Math.sin(perpAngle) * halfWidth;
+		const wideLeftY = centerY + Math.sin(angle) * wideRadius + Math.sin(perpAngle) * halfWidth;
 		const wideRightX = center + Math.cos(angle) * wideRadius - Math.cos(perpAngle) * halfWidth;
-		const wideRightY = center + Math.sin(angle) * wideRadius - Math.sin(perpAngle) * halfWidth;
+		const wideRightY = centerY + Math.sin(angle) * wideRadius - Math.sin(perpAngle) * halfWidth;
 
 		// Outer tip point - will be more rounded due to closer widest point
 		const tipX = center + Math.cos(angle) * length;
-		const tipY = center + Math.sin(angle) * length;
+		const tipY = centerY + Math.sin(angle) * length;
 
 		// Control points for smooth arc from base to widest point (inner 60%)
 		// Pull outward to create the rounded bulge
@@ -152,22 +171,22 @@
 		const innerArcCtrlLeftX =
 			center + Math.cos(angle) * innerArcCtrlRadius + Math.cos(perpAngle) * halfWidth * 1.0;
 		const innerArcCtrlLeftY =
-			center + Math.sin(angle) * innerArcCtrlRadius + Math.sin(perpAngle) * halfWidth * 1.0;
+			centerY + Math.sin(angle) * innerArcCtrlRadius + Math.sin(perpAngle) * halfWidth * 1.0;
 		const innerArcCtrlRightX =
 			center + Math.cos(angle) * innerArcCtrlRadius - Math.cos(perpAngle) * halfWidth * 1.0;
 		const innerArcCtrlRightY =
-			center + Math.sin(angle) * innerArcCtrlRadius - Math.sin(perpAngle) * halfWidth * 1.0;
+			centerY + Math.sin(angle) * innerArcCtrlRadius - Math.sin(perpAngle) * halfWidth * 1.0;
 
 		// Control points for rounded tip (outer 40%) - keeps width longer for rounder tip
 		const outerArcCtrlRadius = innerRadius + petalLength * 0.85;
 		const outerArcCtrlLeftX =
 			center + Math.cos(angle) * outerArcCtrlRadius + Math.cos(perpAngle) * halfWidth * 0.5;
 		const outerArcCtrlLeftY =
-			center + Math.sin(angle) * outerArcCtrlRadius + Math.sin(perpAngle) * halfWidth * 0.5;
+			centerY + Math.sin(angle) * outerArcCtrlRadius + Math.sin(perpAngle) * halfWidth * 0.5;
 		const outerArcCtrlRightX =
 			center + Math.cos(angle) * outerArcCtrlRadius - Math.cos(perpAngle) * halfWidth * 0.5;
 		const outerArcCtrlRightY =
-			center + Math.sin(angle) * outerArcCtrlRadius - Math.sin(perpAngle) * halfWidth * 0.5;
+			centerY + Math.sin(angle) * outerArcCtrlRadius - Math.sin(perpAngle) * halfWidth * 0.5;
 
 		// Control point for smooth base closure (curves inward slightly)
 		const baseCtrlX = baseX - Math.cos(angle) * baseHalfWidth * 0.3;
@@ -198,7 +217,7 @@
 	}
 </script>
 
-<svg width={size} height={size} viewBox="0 0 {size} {size}" class="petal-chart">
+<svg width={size} height={viewBoxHeight} viewBox="0 0 {size} {viewBoxHeight}" class="petal-chart">
 	<defs>
 		{#if enableGlow}
 			<!-- Standard glow for trending up petals -->
@@ -290,6 +309,25 @@
 		</linearGradient>
 	</defs>
 
+	<!-- Potential trace outlines (perfect petal at score = 8) -->
+	{#if showPotentialTrace}
+		{#each data as petal, i}
+			{@const isAlreadyPerfect = petal.score >= 8}
+			{#if !isAlreadyPerfect}
+				<path
+					d={getPerfectPetalPath(i)}
+					fill="none"
+					stroke="var(--foreground, #f8fafc)"
+					stroke-width="1.5"
+					stroke-dasharray="3 2"
+					opacity="0.2"
+					class="potential-trace"
+					pointer-events="none"
+				/>
+			{/if}
+		{/each}
+	{/if}
+
 	<!-- Petals -->
 	{#each data as petal, i}
 		{@const isMaxScore = hasGoldenGlow(petal.score)}
@@ -333,9 +371,9 @@
 			{@const verticalFactor = Math.abs(Math.sin(angle))}
 			{@const horizontalFactor = Math.abs(Math.cos(angle))}
 			{@const isTopOrBottom = verticalFactor > 0.85}
-			{@const labelRadius = isTopOrBottom ? baseRadius + 12 : baseRadius - horizontalFactor * 15}
+			{@const labelRadius = isTopOrBottom ? baseRadius - 8 : baseRadius - horizontalFactor * 15}
 			{@const labelX = center + Math.cos(angle) * labelRadius}
-			{@const labelY = center + Math.sin(angle) * labelRadius}
+			{@const labelY = centerY + Math.sin(angle) * labelRadius}
 			{@const textAnchor = horizontalFactor < 0.3 ? 'middle' : (Math.cos(angle) > 0 ? 'start' : 'end')}
 			{@const xOffset = horizontalFactor < 0.3 ? 0 : (Math.cos(angle) > 0 ? 4 : -4)}
 			<text
@@ -354,7 +392,7 @@
 			{@const angle = i * angleStep - Math.PI / 2}
 			{@const valueRadius = dynamicCenterRadius + (petal.score / 10) * maxPetalLength * 0.6}
 			{@const valueX = center + Math.cos(angle) * valueRadius}
-			{@const valueY = center + Math.sin(angle) * valueRadius}
+			{@const valueY = centerY + Math.sin(angle) * valueRadius}
 			<text
 				x={valueX}
 				y={valueY}
@@ -384,12 +422,12 @@
 
 	<!-- Center circle with dynamic size based on aggregate score -->
 	<!-- Outer glow ring -->
-	<circle cx={center} cy={center} r={dynamicCenterRadius + 8} class="center-glow" />
+	<circle cx={center} cy={centerY} r={dynamicCenterRadius + 8} class="center-glow" />
 
 	<!-- Guardian verification ring (outer) - shows data completeness -->
 	<circle
 		cx={center}
-		cy={center}
+		cy={centerY}
 		r={dynamicCenterRadius + 6}
 		fill="none"
 		stroke="url(#guardian-gradient)"
@@ -398,14 +436,14 @@
 			Math.PI *
 			(dynamicCenterRadius + 6)}"
 		stroke-linecap="round"
-		transform="rotate(-90 {center} {center})"
+		transform="rotate(-90 {center} {centerY})"
 		class="guardian-ring"
 		opacity="0.8"
 	/>
 	<!-- Guardian ring background (shows incomplete portion) -->
 	<circle
 		cx={center}
-		cy={center}
+		cy={centerY}
 		r={dynamicCenterRadius + 6}
 		fill="none"
 		stroke="#e2e8f0"
@@ -416,7 +454,7 @@
 	<!-- Confidence ring (inner) - uses theme primary gold -->
 	<circle
 		cx={center}
-		cy={center}
+		cy={centerY}
 		r={dynamicCenterRadius + 2}
 		fill="none"
 		stroke="var(--primary, #c8ab37)"
@@ -425,23 +463,23 @@
 			Math.PI *
 			(dynamicCenterRadius + 2)}"
 		stroke-linecap="round"
-		transform="rotate(-90 {center} {center})"
+		transform="rotate(-90 {center} {centerY})"
 		class="confidence-ring"
 	/>
 
 	<!-- Main center circle -->
-	<circle cx={center} cy={center} r={dynamicCenterRadius} class="center-circle" />
+	<circle cx={center} cy={centerY} r={dynamicCenterRadius} class="center-circle" />
 
 	{#if showCenterValue}
 		<!-- Raw score (X/64) -->
-		<text x={center} y={center - 14} text-anchor="middle" dominant-baseline="middle" class="center-score">
+		<text x={center} y={centerY - 14} text-anchor="middle" dominant-baseline="middle" class="center-score">
 			{totalBloomScore.toFixed(0)}<tspan class="center-score-max">/64</tspan>
 		</text>
 
 		<!-- Bloom percentage -->
 		<text
 			x={center}
-			y={center + 4}
+			y={centerY + 4}
 			text-anchor="middle"
 			dominant-baseline="middle"
 			class="center-percentage"
@@ -452,7 +490,7 @@
 		<!-- Bloom status label -->
 		<text
 			x={center}
-			y={center + 20}
+			y={centerY + 20}
 			text-anchor="middle"
 			dominant-baseline="middle"
 			class="center-status"

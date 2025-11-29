@@ -3,6 +3,7 @@ export { default as PetalChart } from './PetalChart.svelte';
 export { default as BloomStatus } from './BloomStatus.svelte';
 export { default as PetalScoreCard } from './PetalScoreCard.svelte';
 export { default as SubCriteriaPanel } from './SubCriteriaPanel.svelte';
+export { default as PetalDetailModal } from './PetalDetailModal.svelte';
 export { default as PropertyScoringDetails } from './PropertyScoringDetails.svelte';
 
 // Petal Chart Components - DESIGN.md Ecosystem

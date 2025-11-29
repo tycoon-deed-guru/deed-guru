@@ -52,6 +52,7 @@ Petal Score = Σ(SubCriteria[i].score × SubCriteria[i].weight)
 ### Sub-Criteria by Petal
 
 #### CASHFLOW (Income Generation)
+
 | Sub-Criteria | Weight | Description |
 |--------------|--------|-------------|
 | Cap Rate | 30% | Net operating income / purchase price |
@@ -61,6 +62,7 @@ Petal Score = Σ(SubCriteria[i].score × SubCriteria[i].weight)
 | Vacancy Rate | 10% | Historical vacancy percentage |
 
 #### APPRECIATION (Long-term Value Growth)
+
 | Sub-Criteria | Weight | Description |
 |--------------|--------|-------------|
 | Market Trend | 30% | Historical and projected price growth |
@@ -70,6 +72,7 @@ Petal Score = Σ(SubCriteria[i].score × SubCriteria[i].weight)
 | Comparable Sales | 10% | Recent similar property sales |
 
 #### FINANCING (Loan Availability & Terms)
+
 | Sub-Criteria | Weight | Description |
 |--------------|--------|-------------|
 | Interest Rate | 30% | Current loan interest rate |
@@ -79,6 +82,7 @@ Petal Score = Σ(SubCriteria[i].score × SubCriteria[i].weight)
 | Refinance Options | 10% | Future refinancing potential |
 
 #### LOCATION (Geographic Appeal)
+
 | Sub-Criteria | Weight | Description |
 |--------------|--------|-------------|
 | Walk Score | 20% | Walkability and transit access |
@@ -90,6 +94,7 @@ Petal Score = Σ(SubCriteria[i].score × SubCriteria[i].weight)
 *Note: Location uniquely uses equal weights across all criteria.*
 
 #### CONDITION (Physical State)
+
 | Sub-Criteria | Weight | Description |
 |--------------|--------|-------------|
 | Structural Integrity | 25% | Foundation, roof, walls |
@@ -99,6 +104,7 @@ Petal Score = Σ(SubCriteria[i].score × SubCriteria[i].weight)
 | Energy Efficiency | 10% | Insulation, windows, appliances |
 
 #### TENANCY (Occupancy & Lease Quality)
+
 | Sub-Criteria | Weight | Description |
 |--------------|--------|-------------|
 | Occupancy Rate | 25% | Current occupancy percentage |
@@ -108,6 +114,7 @@ Petal Score = Σ(SubCriteria[i].score × SubCriteria[i].weight)
 | Rent Roll Strength | 15% | Below/at/above market rents |
 
 #### LIQUIDITY (Exit Ease)
+
 | Sub-Criteria | Weight | Description |
 |--------------|--------|-------------|
 | Days on Market | 30% | Average time to sell in area |
@@ -117,6 +124,7 @@ Petal Score = Σ(SubCriteria[i].score × SubCriteria[i].weight)
 | Price Stability | 10% | Frequency of price reductions |
 
 #### COMPLIANCE (Legal & Regulatory)
+
 | Sub-Criteria | Weight | Description |
 |--------------|--------|-------------|
 | Permits Current | 25% | All permits up to date |
@@ -245,6 +253,7 @@ interface ScoredProperty {
 ### Petal Metadata
 
 Each petal tracks:
+
 - **Score**: 0-8 (weighted average of sub-criteria)
 - **Confidence**: 0-1 (data accuracy certainty)
 - **Completeness**: 0-1 (% sub-criteria with scores > 0)

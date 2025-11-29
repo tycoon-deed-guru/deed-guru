@@ -28,7 +28,8 @@
 	import type { PageData } from './$types';
 
 	// Import Guardian-grade scoring components
-	import { PetalChart, BloomStatus, SubCriteriaPanel } from '$lib/components/petal-chart';
+	import { PetalChart, BloomStatus } from '$lib/components/petal-chart';
+	import PetalDetailModal from '$lib/components/petal-chart/PetalDetailModal.svelte';
 	import type { PetalDataPoint, PetalCategory } from '$lib/types/petal-chart.types';
 	import { PETAL_ORDER, PETAL_LABELS } from '$lib/types/petal-chart.types';
 	import {
@@ -54,7 +55,8 @@
 	let chatInput = $state("");
 	let terminalOpen = $state(data.workspaceSession.terminalOpen ?? true);
 	let terminalHeight = $state(250);
-	let expandedPetal = $state<PetalCategory | null>(null);
+	let selectedPetal = $state<PetalCategory | null>(null);
+	let modalOpen = $state(false);
 	let selectedWeightingProfile = $state<WeightingProfileType>("equal");
 
 	let chatMessages = $state<Array<{ role: "user" | "assistant"; content: string }>>([
@@ -227,7 +229,16 @@
 	};
 
 	function togglePetal(category: PetalCategory) {
-		expandedPetal = expandedPetal === category ? null : category;
+		selectedPetal = category;
+		modalOpen = true;
+	}
+
+	function closeModal() {
+		modalOpen = false;
+	}
+
+	function navigateToPetal(category: PetalCategory) {
+		selectedPetal = category;
 	}
 
 	function getPetalScoring(category: PetalCategory): PetalScoring | undefined {
@@ -578,30 +589,9 @@
 								{/each}
 							</div>
 
-							<!-- Sub-Criteria Panels -->
-							<div class="space-y-2">
-								<h3 class="text-sm font-semibold text-muted-foreground">Sub-Criteria Breakdown</h3>
-								<p class="text-xs text-muted-foreground mb-2">Click any petal above or panel below to see detailed sub-criteria</p>
-
-								{#each PETAL_ORDER as category}
-									{@const petal = getPetalData(category)}
-									{@const scoring = getPetalScoring(category)}
-									{#if petal && scoring}
-										<SubCriteriaPanel
-											{category}
-											score={petal.score}
-											confidence={petal.confidence}
-											trend={petal.trend}
-											subScores={scoring.subCriteria.map(c => ({
-												id: c.id,
-												score: c.score,
-												rawValue: c.rawValue
-											}))}
-											expanded={expandedPetal === category}
-											onToggle={() => togglePetal(category)}
-										/>
-									{/if}
-								{/each}
+							<!-- Hint Text -->
+							<div class="text-center py-4">
+								<p class="text-sm text-muted-foreground">Click any petal above to see detailed sub-criteria breakdown</p>
 							</div>
 						</Card.Content>
 					</Card.Root>
@@ -820,3 +810,29 @@
 		</button>
 	{/if}
 </div>
+
+<!-- Petal Detail Modal -->
+{#if selectedPetal}
+	{@const petal = getPetalData(selectedPetal)}
+	{@const scoring = getPetalScoring(selectedPetal)}
+	{#if petal && scoring}
+		<PetalDetailModal
+			bind:open={modalOpen}
+			category={selectedPetal}
+			score={petal.score}
+			confidence={petal.confidence}
+			trend={petal.trend}
+			subScores={scoring.subCriteria.map(c => ({
+				id: c.id,
+				score: c.score,
+				rawValue: c.rawValue
+			}))}
+			allPetals={petalData.map(p => ({
+				category: p.id as PetalCategory,
+				score: p.score
+			}))}
+			onClose={closeModal}
+			onNavigate={navigateToPetal}
+		/>
+	{/if}
+{/if}
